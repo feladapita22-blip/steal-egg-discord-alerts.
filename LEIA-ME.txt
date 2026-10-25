@@ -1,0 +1,44 @@
+# STEAL EGG → Discord Notifier (fonte comunitária)
+
+Este programa consulta a página pública STEAL EGG LIVE usando um navegador automatizado **headless** (sem captura da tela do usuário e sem abrir o Roblox) e envia novos registros de ovos Divine/Eternal/Secret para um webhook do Discord.
+
+## Limitação importante
+A página informa que os dados vêm de relatos externos/comunitários, atualizados aproximadamente a cada 60 segundos. Um registro **não confirma** que o ovo esteja no seu servidor Roblox, nem que ainda esteja disponível. Este programa não lê o servidor do jogo diretamente.
+
+## Configuração
+
+1. Crie um webhook no canal do Discord: **Editar canal → Integrações → Webhooks → Novo webhook**.
+2. Copie o URL do webhook e mantenha-o privado.
+3. Configure as variáveis de ambiente:
+   - `DISCORD_WEBHOOK_URL`: URL do webhook.
+   - `DISCORD_USER_IDS`: IDs de Discord separados por vírgula, sem `@`, para mencionar (opcional). As quatro IDs que você forneceu já estão configuradas como padrão; só altere essa variável se quiser mudar a lista.
+   - `POLL_SECONDS`: intervalo de consulta, mínimo 60 segundos (opcional).
+4. Instale as dependências:
+   ```bash
+   python -m pip install -r requirements.txt
+   python -m playwright install chromium
+   ```
+5. Execute:
+   ```bash
+   python notifier.py
+   ```
+
+Na primeira execução, o histórico atual é salvo sem alertas para evitar uma enxurrada de notificações antigas. Depois, o programa tenta avisar sobre novos registros.
+
+## Variáveis no Windows PowerShell
+```powershell
+$env:DISCORD_WEBHOOK_URL="COLE_AQUI_O_WEBHOOK"
+# Opcional: para substituir as quatro IDs já configuradas no script
+# $env:DISCORD_USER_IDS="ID1,ID2,ID3,ID4"
+$env:POLL_SECONDS="60"
+python notifier.py
+```
+
+## Hospedagem 24/7
+O serviço precisa permitir Python + Playwright/Chromium e processos contínuos. Nem toda hospedagem gratuita suporta navegador headless ou garante uptime. Faça primeiro o teste local e depois publique em um host compatível. Nunca coloque o webhook em repositório público.
+
+## Segurança e comportamento
+- Só as IDs listadas em `DISCORD_USER_IDS` podem ser mencionadas pelo webhook; `@everyone` não é usado.
+- Não cole o webhook em chats públicos.
+- O site pode mudar sua estrutura, o que pode exigir ajuste nos seletores de extração.
+- Este pacote é um protótipo e ainda precisa ser validado contra a estrutura atual do site e o webhook real antes de ser considerado operacional.
